@@ -1,6 +1,12 @@
 class ApplicationController < ActionController::API
     before_action :authenticate_request
+    rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+
+
     include JsonWebToken
+    def record_not_found
+      render json: {error: "Entity not found"}, status: :not_found
+    end
     
     private 
     def authenticate_request 

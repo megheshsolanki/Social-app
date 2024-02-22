@@ -16,4 +16,6 @@ class User < ApplicationRecord
         (?=.*[A-Z])
         (?=.*[[:^alnum:]])
     /x
+    has_many :articles, dependent: :destroy
+    has_many :comments, dependent: :destroy
 end
