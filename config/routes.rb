@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+
+
   post '/register', to: "user#create"
   post '/login', to: "authentication#login"
   patch '/update', to: "user#update"
@@ -16,8 +18,6 @@ Rails.application.routes.draw do
   delete '/article/:article_id/comment/:id', to: "comment#destroy"
 
   post '/like/article/:article_id', to: "like#like_article"
-  delete '/like/article/:article_id', to: "like#unlike_article"
-
   post '/like/comment/:comment_id', to: "like#like_comment"
-  delete '/like/comment/:comment_id', to: "like#unlike_comment"
+  
 end
