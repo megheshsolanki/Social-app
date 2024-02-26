@@ -25,4 +25,7 @@ Rails.application.routes.draw do
   post "/friendship/accept/:to_accept", to:'friendship#accept'
   post '/friendship/decline/:to_decline', to:'friendship#decline'
   
+  post "/forgot_password", to:'forgot_password#create'
+  post "/password_reset", to: "forgot_password#update"
+  
 end

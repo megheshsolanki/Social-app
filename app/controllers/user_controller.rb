@@ -29,6 +29,6 @@ class UserController < ApplicationController
 
     private
     def user_params
-        params.require(:user).permit(:name, :password, :email, :phone_number);
+        params.require(:user).permit(:name, :password, :email, :phone_number,:otp, :otp_sent_at);
     end
 end
