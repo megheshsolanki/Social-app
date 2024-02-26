@@ -1,4 +1,3 @@
-# app/controllers/likes_controller.rb
 class LikeController < ApplicationController
    
     def like_article

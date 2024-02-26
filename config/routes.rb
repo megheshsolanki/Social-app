@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-
+  root "user#index"
   post '/register', to: "user#create"
   post '/login', to: "authentication#login"
   patch '/update', to: "user#update"
@@ -19,5 +19,10 @@ Rails.application.routes.draw do
 
   post '/like/article/:article_id', to: "like#like_article"
   post '/like/comment/:comment_id', to: "like#like_comment"
+
+  get "/notifications", to:'notification#show'
+  post "/create_friend", to:'friendship#create'
+  post "/friendship/accept/:to_accept", to:'friendship#accept'
+  post '/friendship/decline/:to_decline', to:'friendship#decline'
   
 end

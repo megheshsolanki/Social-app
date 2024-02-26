@@ -18,4 +18,12 @@ class User < ApplicationRecord
     /x
     has_many :articles, dependent: :destroy
     has_many :comments, dependent: :destroy
+
+    
+    has_many :friendships
+    has_many :friends, through: :friendships
+
+    has_many :notifications 
+    has_many :notify, through: :notifications
+    
 end

@@ -1,5 +1,9 @@
 class UserController < ApplicationController
     skip_before_action :authenticate_request,  only: [:create]
+    def index 
+        @users = User.where.not(id: @current_user.id)
+        render json: @users, status: :ok
+    end
     def create 
         @user = User.new(user_params)
         if @user.save
