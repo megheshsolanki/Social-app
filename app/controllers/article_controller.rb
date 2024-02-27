@@ -1,7 +1,13 @@
 class ArticleController < ApplicationController
 
+    def get_all
+        @articles = Article.all
+        render json: @articles, status: :ok
+    end
     def index 
-        @articles = Article.all 
+        @page = params[:page].to_i || 1
+        @per_page = params[:page_size].to_i || 10 
+        @articles = Article.limit(@per_page).offset((@page - 1) * @per_page)
         render json: @articles, status: :ok 
     end
     def create 

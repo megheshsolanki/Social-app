@@ -6,7 +6,8 @@ Rails.application.routes.draw do
   patch '/update', to: "user#update"
   get '/show', to: "user#show" 
 
-  get '/article', to: "article#index"
+  get '/article', to: "article#get_all"
+  get '/article/page', to: "article#index"
   get '/article/:id' , to: "article#show"
   post '/article', to: "article#create"
   patch '/article/:id', to: "article#update"
