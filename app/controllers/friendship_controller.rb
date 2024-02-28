@@ -20,6 +20,7 @@ class FriendshipController < ApplicationController
         @sender = User.find(params[:to_accept])
         @friendship = Friendship.find_by(sender_id: @sender.id, reciever_id: @user.id)
         @friendship.status = "accepted"
+        Friendship.create(sender_id: @current_user.id, reciever_id: @sender.id, status:'accepted')
         @notification = Notification.find_by(sender_id: @sender.id,reciever_id: @user.id, notification_type: 'friendship request')
         @notification.destroy
         if @friendship.save 

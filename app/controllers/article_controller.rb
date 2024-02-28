@@ -1,8 +1,20 @@
 class ArticleController < ApplicationController
 
     def get_all
-        @articles = Article.all
-        render json: @articles, status: :ok
+        @articles = []
+
+        @articles += Article.where(user_id: @current_user.id)
+
+        @articles += Article.where(privacy: 'public').where.not(user_id: @current_user.id)
+        
+        Article.where(privacy: 'friends').where.not(user_id: @current_user.id).select do |article|
+            @friend = Friendship.find_by(sender_id: article.user_id, reciever_id: @current_user.id)
+            if(@friend)
+                @articles << article
+            end
+        end
+        
+        render json: {articles: @articles,size: @articles.size}, status: :ok
     end
     def index 
         @page = params[:page].to_i || 1

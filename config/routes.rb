@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   post '/register', to: "user#create"
   post '/login', to: "authentication#login"
   patch '/update', to: "user#update"
+  post '/verification', to: "user#verify"
   get '/show', to: "user#show" 
 
   get '/article', to: "article#get_all"
