@@ -5,7 +5,7 @@ class UserController < ApplicationController
         render json: @users, status: :ok
     end
     def create 
-        @user = User.new(user_params)
+        @user = User.new(user_params.merge(verification: false))
         if @user.save
             token = jwt_encode({user_id: @user.id});
             verification_link = "http://localhost:3000/verification?token=#{token}"

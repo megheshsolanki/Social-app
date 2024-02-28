@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_27_193825) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_28_193134) do
   create_table "articles", force: :cascade do |t|
     t.string "title"
     t.string "body"
@@ -66,6 +66,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_27_193825) do
     t.datetime "updated_at", null: false
     t.string "otp"
     t.datetime "otp_sent_at"
+    t.boolean "verification"
   end
 
   add_foreign_key "articles", "users"
