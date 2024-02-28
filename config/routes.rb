@@ -20,7 +20,9 @@ Rails.application.routes.draw do
   delete '/article/:article_id/comment/:id', to: "comment#destroy"
 
   post '/like/article/:article_id', to: "like#like_article"
+  get "/like/article/:article_id/show", to: "like#likes_on_article"
   post '/like/comment/:comment_id', to: "like#like_comment"
+  get "/like/comment/:comment_id/show", to: "like#likes_on_comment"
 
   get "/notifications", to:'notification#show'
   post "/create_friend", to:'friendship#create'
