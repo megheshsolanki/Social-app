@@ -9,7 +9,8 @@ class UserController < ApplicationController
         if @user.save
             token = jwt_encode({user_id: @user.id});
             verification_link = "http://localhost:3000/verification?token=#{token}"
-            render json: {user: @user, link: verification_link}, status: :created
+            UserMailer.with(user_id: @user.id,verification_link: verification_link).account_verification.deliver_now
+            render json: {user: @user}, status: :created
         else
             render json: {errors: @user.errors.full_messages} , status: :unprocessable_entity
         end
@@ -18,7 +19,12 @@ class UserController < ApplicationController
         decoded = jwt_decode(params[:token])
         if decoded.present? && decoded.key?(:user_id)
             @user = User.find(decoded[:user_id])
-            render json: {user: @user, message: "user email verified"}, status: :ok 
+            @user.verification = true
+            if @user.save 
+                render json: {user: @user, message: "user email verified"}, status: :ok 
+            else
+                render json: {errors: @user.errors.full_messages}, status: :unprocessable_entity
+            end
         else
             render json: {errors: "invalid link"}, status: :unprocessable_entity
         end

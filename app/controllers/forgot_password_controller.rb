@@ -5,7 +5,8 @@ class ForgotPasswordController < ApplicationController
         if @user
             @user.generate_otp
             if @user.save
-              render json: { user: @user,message: "OTP sent" }
+              ForgotPasswordMailer.with(user_id: @user.id).forgot_password.deliver_now
+              render json: {message: "OTP sent" }
             else
               render json: {errors: @user.errors.full_messages}, status: :unprocessable_entity
             end

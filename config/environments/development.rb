@@ -55,6 +55,7 @@ Rails.application.configure do
 
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
+   
 
 
   # Raises error for missing translations.
@@ -67,5 +68,17 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
 
   # Raise error when a before_action's only/except options reference missing actions
+  config.action_mailer.default_options = {
+    from: 'megheshtest@gmail.com' # Replace with your default "from" email address
+  }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: 'smtp.gmail.com',
+    port: 587,
+    user_name: 'megheshtest@gmail.com',
+    password: 'kbblsbjyhectfxpf',
+    authentication: 'plain',
+    enable_starttls_auto: true
+  }
   config.action_controller.raise_on_missing_callback_actions = true
 end
