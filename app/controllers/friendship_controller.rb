@@ -63,7 +63,7 @@ class FriendshipController < ApplicationController
         @notifications = Notification.find_by(sender_id: @sender.id,reciever_id: @user.id, notification_type: 'friendship request')
         @notification.destroy
         @friendship.status = "declined"
-        render json: {message: "Friend request declined"}, status: :ok
+        render json: {message: "Friend request declined"}, status: :ok 
       end
 
 end

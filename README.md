@@ -29,7 +29,7 @@ This is an API-only application which is similar to a social network application
   * [x] 4.3 Like and unlike  on Posts and comments (use polymorphic association)
   * [x] 4.4 seprate api for getting all likes on post and comments 
 * [x] 5. Add friends - request would be in pending, accepted and decline
-  * [ ] 5.1  if decline can send friend request again after 30days
+  * [x] 5.1  if decline can send friend request again after 30days
   * [ ] 5.2 Block user and remove from friend list. so after unblocking also user will not be in his friend list.
 * [x] 6. Make post public, private and only_friends
 * [ ] 7. Share post( public and  only_friend only)
