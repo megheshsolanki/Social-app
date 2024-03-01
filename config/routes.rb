@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   patch '/update', to: "user#update"
   post '/verification', to: "user#verify"
   get '/show', to: "user#show" 
+  post "/refresh", to: "authentication#refresh"
 
   get '/article', to: "article#get_all"
   get '/article/page', to: "article#index"
