@@ -10,6 +10,7 @@ This is an API-only application which is similar to a social network application
 - Can comment on the articles
 - Can like the articles and the comments
 - Can send friend requests to other users
+- Can block/unblock other users
 
 
 # Feature needs to be added 
@@ -30,7 +31,7 @@ This is an API-only application which is similar to a social network application
   * [x] 4.4 seprate api for getting all likes on post and comments 
 * [x] 5. Add friends - request would be in pending, accepted and decline
   * [x] 5.1  if decline can send friend request again after 30days
-  * [ ] 5.2 Block user and remove from friend list. so after unblocking also user will not be in his friend list.
+  * [x] 5.2 Block user and remove from friend list. so after unblocking also user will not be in his friend list.
 * [x] 6. Make post public, private and only_friends
 * [ ] 7. Share post( public and  only_friend only)
   * [ ] 7.1 if share post of friend , after unfriend share post should be removed. Or can set set the status of shared post deactivated so that when they become friend again shared post can be visible in his profile. This happens in linkedin if we add some skills and people endorse on that skill. after endorsing we remove it and add again then people who have endorse on that skill will still be visible
