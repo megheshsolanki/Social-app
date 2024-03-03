@@ -29,6 +29,7 @@ class User < ApplicationRecord
     has_many :notifications 
     has_many :notify, through: :notifications
     
+    has_many :blocked_users
     
     def generate_otp
         self.otp = '%04d' % SecureRandom.random_number(10000)

@@ -6,6 +6,9 @@ class ArticleController < ApplicationController
         @articles += Article.where(user_id: @current_user.id)
 
         @articles += Article.where(privacy: 'public').where.not(user_id: @current_user.id)
+
+        @blocked = BlockedUser.find_by(blocked_by: @current_user.id)
+        @articles.reject {|article| @blocked.include? article.user_id} 
         
         Article.where(privacy: 'friends').where.not(user_id: @current_user.id).select do |article|
             @friend = Friendship.find_by(sender_id: article.user_id, reciever_id: @current_user.id)
@@ -13,8 +16,8 @@ class ArticleController < ApplicationController
                 @articles << article
             end
         end
-        
-        render json: {articles: @articles,size: @articles.size}, status: :ok
+
+        render json: {size: @articles.size,articles: @articles}, status: :ok
     end
     def index 
         @page = params[:page].to_i || 1

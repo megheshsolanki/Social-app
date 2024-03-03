@@ -29,14 +29,19 @@ class FriendshipController < ApplicationController
             end      
           end
         else
-          @friendship = Friendship.new(sender_id: @current_user.id, reciever_id: @friend.id, status:'pending')
-          @notification = Notification.new(sender_id: @current_user.id, reciever_id: @friend.id,notification_type: 'friendship request')
-          if @friendship.save 
-              if @notification.save 
-                  render json: {note: "Notification sent", sender: @user.name, reciever: @friend.name, message: "Friend request sent"}, status: :ok
-              else 
-                  render json: {sender: @user.name, reciever: @friend.name, message: "Friend request not send", error: @friendship.errors.full_messages}, status: :unprocessable_entity
-              end
+          blocked = BlockedUser.find_by(blocked_by: @current_user.id, blocked: @friend.id) 
+          if blocked 
+            render json: {message: "user blocked by you, unblock to send request"}, status: :ok 
+          else 
+            @friendship = Friendship.new(sender_id: @current_user.id, reciever_id: @friend.id, status:'pending')
+            @notification = Notification.new(sender_id: @current_user.id, reciever_id: @friend.id,notification_type: 'friendship request')
+            if @friendship.save 
+                if @notification.save 
+                    render json: {note: "Notification sent", sender: @user.name, reciever: @friend.name, message: "Friend request sent"}, status: :ok
+                else 
+                    render json: {sender: @user.name, reciever: @friend.name, message: "Friend request not send", error: @friendship.errors.full_messages}, status: :unprocessable_entity
+                end
+            end
           end
         end
     end
@@ -65,5 +70,18 @@ class FriendshipController < ApplicationController
         @friendship.status = "declined"
         render json: {message: "Friend request declined"}, status: :ok 
       end
+    
+    def block
+        @friendship = Friendship.find_by(sender_id: params[:id],reciever_id: @current_user.id)
+        @friendship.destroy 
+        blocked = BlockedUser.create(blocked_by: @current_user.id, blocked: params[:id])
+        render json: {blocked: blocked, message: "User blocked"}, status: :ok
+    end
+
+    def unblock 
+      @block = BlockedUser.find(params[:id])
+      @block.destroy
+      render json: {message: "User unblocked"}, status: :ok 
+    end
 
 end
