@@ -23,13 +23,18 @@ class User < ApplicationRecord
     has_many :comments, dependent: :destroy
     
     
-    has_many :friendships
-    has_many :friends, through: :friendships
+    has_many :friendships, dependent: :destroy
+    has_many :friends, through: :friendships 
     
-    has_many :notifications 
+    has_many :notifications, dependent: :destroy
     has_many :notify, through: :notifications
     
-    has_many :blocked_users
+    has_many :blocked_user, dependent: :destroy
+    has_many :blocked_by, through: :blocked_user
+    
+  
+
+    has_many :shared_articles, dependent: :destroy 
     
     def generate_otp
         self.otp = '%04d' % SecureRandom.random_number(10000)

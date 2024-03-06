@@ -59,6 +59,19 @@ class ArticleController < ApplicationController
         end
     end
 
+    def share
+        if SharedArticle.find_by(article_id: params[:id],shared_by_id: @current_user.id)
+            render json: {message: "Article already shared"}, status: :ok 
+        else
+            @article = Article.find(params[:id])
+            if @article.privacy == 'public' 
+                @shared = SharedArticle.create(article_id: @article.id, shared_by_id: @current_user.id, owned_by_id: @article.user_id)
+                render json: @shared, status: :created
+            else 
+                render json: {message: "Article is not public cannot be shared"}, status: :forbidden
+            end
+        end
+    end
 
     private 
     def article_params

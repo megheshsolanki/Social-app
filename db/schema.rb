@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_03_164419) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_04_183838) do
   create_table "articles", force: :cascade do |t|
     t.string "title"
     t.string "body"
@@ -22,8 +22,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_03_164419) do
   end
 
   create_table "blocked_users", force: :cascade do |t|
-    t.integer "blocked_by"
-    t.integer "blocked"
+    t.integer "blocked_by_id"
+    t.integer "blocked_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -64,6 +64,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_03_164419) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "shared_articles", force: :cascade do |t|
+    t.integer "article_id"
+    t.integer "shared_by_id"
+    t.integer "owned_by_id"
+    t.string "status", default: "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -77,8 +86,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_03_164419) do
   end
 
   add_foreign_key "articles", "users"
-  add_foreign_key "blocked_users", "users", column: "blocked"
-  add_foreign_key "blocked_users", "users", column: "blocked_by"
+  add_foreign_key "blocked_users", "users", column: "blocked_by_id"
+  add_foreign_key "blocked_users", "users", column: "blocked_id"
   add_foreign_key "comments", "articles"
   add_foreign_key "comments", "users"
   add_foreign_key "friendships", "users", column: "reciever_id"
@@ -86,4 +95,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_03_164419) do
   add_foreign_key "friendships", "users", column: "sender_id"
   add_foreign_key "friendships", "users", column: "sender_id"
   add_foreign_key "likes", "users"
+  add_foreign_key "shared_articles", "articles"
+  add_foreign_key "shared_articles", "users", column: "owned_by_id"
+  add_foreign_key "shared_articles", "users", column: "shared_by_id"
 end

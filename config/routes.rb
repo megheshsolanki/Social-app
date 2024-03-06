@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   post '/article', to: "article#create"
   patch '/article/:id', to: "article#update"
   delete '/article/:id', to: "article#destroy"
+  post '/article/share', to: "article#share"
   
   get '/article/:id/comment' , to: "comment#show_all"
   post '/article/:id/comment', to: "comment#create"
@@ -29,6 +30,8 @@ Rails.application.routes.draw do
   post "/create_friend", to:'friendship#create'
   post "/friendship/accept/:to_accept", to:'friendship#accept'
   post '/friendship/decline/:to_decline', to:'friendship#decline'
+  post '/block', to: 'friendship#block'
+  post '/unblock', to: 'friendship#unblock'
   
   post "/forgot_password", to:'forgot_password#create'
   post "/password_reset", to: "forgot_password#update"

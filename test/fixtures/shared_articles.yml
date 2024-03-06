@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  article_id: 1
+  shared_by: 1
+  owned_by: 1
+  status: MyString
+
+two:
+  article_id: 1
+  shared_by: 1
+  owned_by: 1
+  status: MyString

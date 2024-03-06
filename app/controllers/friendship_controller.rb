@@ -72,16 +72,56 @@ class FriendshipController < ApplicationController
       end
     
     def block
+      if BlockedUser.where(blocked_by_id: @current_user.id, blocked_id: params[:id])
+        render json: {message: "User already blocked"}, status: :ok 
+      else 
         @friendship = Friendship.find_by(sender_id: params[:id],reciever_id: @current_user.id)
-        @friendship.destroy 
-        blocked = BlockedUser.create(blocked_by: @current_user.id, blocked: params[:id])
-        render json: {blocked: blocked, message: "User blocked"}, status: :ok
+        if @friendship
+          @friendship.destroy
+          @friendship = Friendship.find_by(sender_id: @current_user.id,reciever_id: params[:id])
+          @friendship.destroy 
+        end
+        @shared_articles = SharedArticle.all.where(shared_by: @current_user.id, owned_by: params[:id])
+        if @shared_articles.size > 0
+          @shared_articles.each do |shared_article|
+            shared_article.update(status: "inactive")
+          end
+        end
+        @shared_articles = SharedArticle.all.where(shared_by: params[:id], owned_by: @current_user.id)
+        if @shared_articles.size > 0
+          @shared_articles.each do |shared_article|
+            shared_article.update(status: "inactive")
+          end
+        end
+        @user = @current_user
+        @blocked = User.find(params[:id])
+        @blocked_user = BlockedUser.create(blocked_id: @blocked.id, blocked_by_id: @current_user.id)
+        if @blocked_user.save
+          render json: {blocked: @blocked_user, message: "User blocked"}, status: :ok
+        end
+      end
     end
 
-    def unblock 
-      @block = BlockedUser.find(params[:id])
-      @block.destroy
-      render json: {message: "User unblocked"}, status: :ok 
+    def unblock
+      @block = BlockedUser.find_by(blocked_id: params[:id], blocked_by_id: @current_user.id)
+      if @block 
+        @shared_articles = SharedArticle.all.where(shared_by: @current_user.id, owned_by: params[:id])
+        if @shared_articles.size > 0
+          @shared_articles.each do |shared_article|
+            shared_article.update(status: "active")
+          end
+        end
+        @shared_articles = SharedArticle.all.where(shared_by: params[:id], owned_by: @current_user.id)
+        if @shared_articles.size > 0
+          @shared_articles.each do |shared_article|
+            shared_article.update(status: "active")
+          end
+        end
+        @block.destroy
+        render json: {message: "User unblocked"}, status: :ok 
+      else 
+        render json: {message: "User was not blocked"}, status: :ok
+      end
     end
 
 end
