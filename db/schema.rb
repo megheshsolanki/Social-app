@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_04_183838) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_08_070107) do
   create_table "articles", force: :cascade do |t|
     t.string "title"
     t.string "body"
@@ -83,6 +83,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_04_183838) do
     t.string "otp"
     t.datetime "otp_sent_at"
     t.boolean "verification"
+    t.string "profile_picture"
+    t.string "cover_picture"
   end
 
   add_foreign_key "articles", "users"

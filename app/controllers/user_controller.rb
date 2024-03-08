@@ -6,6 +6,8 @@ class UserController < ApplicationController
     end
     def create 
         @user = User.new(user_params.merge(verification: false))
+        @user.profile_picture = upload_picture(params[:profile_picture]) if params[:profile_picture]
+        @user.cover_picture = upload_picture(params[:cover_picture]) if params[:cover_picture]
         if @user.save
             token = jwt_encode({user_id: @user.id});
             verification_link = "http://localhost:3000/verification?token=#{token}"
@@ -32,6 +34,9 @@ class UserController < ApplicationController
     def update 
         @user = @current_user
         if @user.update(user_params)
+            @user.profile_picture = upload_picture(params[:profile_picture]) if params[:profile_picture]
+            @user.cover_picture = upload_picture(params[:cover_picture]) if params[:cover_picture]
+            @user.save 
             render json: @user , status: :ok
         else 
             render json: {errors: @user.errors.full_messages}, status: :unprocessable_entity
@@ -40,11 +45,16 @@ class UserController < ApplicationController
 
 
     def show 
-        render json: @current_user
+        render json: @current_user, status: :ok
     end
 
     private
+
+    def upload_picture(picture) 
+        uploaded_picture = Cloudinary::Uploader.upload(picture)
+        uploaded_picture['secure_url']
+    end
     def user_params
-        params.require(:user).permit(:name, :password, :email, :phone_number,:otp, :otp_sent_at);
+        params.permit(:name, :password, :email, :phone_number,:otp, :otp_sent_at, :profile_picture, :cover_image);
     end
 end
