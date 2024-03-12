@@ -5,7 +5,7 @@ class User < ApplicationRecord
     
     validates :name , presence: true
     validates :email , presence: true 
-    validates :email , email: true
+    validates :email , email: true 
     validates :password_digest , presence: true, format: { with: /\A
     (?=.{8,})
     (?=.*[a-z])
