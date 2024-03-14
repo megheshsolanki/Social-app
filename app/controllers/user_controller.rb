@@ -9,7 +9,7 @@ class UserController < ApplicationController
         @user.profile_picture = upload_picture(params[:profile_picture]) if params[:profile_picture]
         @user.cover_picture = upload_picture(params[:cover_picture]) if params[:cover_picture]
         if @user.save
-            token = jwt_encode({user_id: @user.id});
+            token = JsonWebToken.jwt_encode({user_id: @user.id});
             verification_link = "http://localhost:3000/verification?token=#{token}"
             UserMailer.with(user_id: @user.id,verification_link: verification_link).account_verification.deliver_now
             render json: {user: @user}, status: :created
