@@ -5,173 +5,143 @@ def json
 end
 
 RSpec.describe "UserControllers", type: :request do
+  
   describe "POST /register" do
-    context "with valid parameters" do
-      let!(:user) {FactoryBot.build(:user)}
-      before do
-        post '/register', params: {
-            name: user.name,
-            email: user.email,
-            password: user.password,
-            phone_number: user.phone_number
-        }
-      end
-      it "should return user instance" do
-        expect(json['user']).to be_present  
-      end
-      it 'returns the name' do
-        expect(json['user']['name']).to eq(user.name)  
-      end
-      it 'returns the email' do
-        expect(json['user']['email']).to eq(user.email)  
-      end
-      it 'returns the phone_number' do
-        expect(json['user']['phone_number']).to eq(user.phone_number)  
-      end
-      it 'returns a created status' do
-        expect(response).to have_http_status(:created)
-      end
-    end
-    context "with invalid parameters" do
-      let(:user)  {FactoryBot.build(:user,{
+    let(:valid_params) { FactoryBot.attributes_for(:user) }
+    let(:invalid_params) do 
+      {
         name: "asd",
         email: "asdasd.com",
         phone_number: "123",
         password: "password"
-      })}
-      before do
-        post '/register', params: {
-            name: user.name,
-            email: user.email,
-            password: user.password,
-            phone_number: user.phone_number
-        }
+      }
+    end
+    context "with valid parameters" do
+      it "should return user instance" do
+        post '/register', params: valid_params
+        expect(json['user']).to be_present  
       end
+      it 'returns the name' do
+        post '/register', params: valid_params
+        expect(json['user']['name']).to eq(valid_params[:name])  
+      end
+      it 'returns the email' do
+        post '/register', params: valid_params
+        expect(json['user']['email']).to eq(valid_params[:email])  
+      end
+      it 'returns the phone_number' do
+        post '/register', params: valid_params
+        expect(json['user']['phone_number']).to eq(valid_params[:phone_number])  
+      end
+      it 'returns a created status' do
+        post '/register', params: valid_params
+        expect(response).to have_http_status(:created)
+      end
+    end
+    context "with invalid parameters" do
       it 'returns the errors' do
+        post '/register', params: invalid_params
         expect(json['errors']).to be_present  
       end
       it 'returns a unproccessable content status' do
+        post '/register', params: invalid_params
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
   describe "get /" do
+    let(:user) { FactoryBot.create(:user)}
+    let(:access_token) { JsonWebToken.jwt_encode(user_id: user.id) }
     context "valid parameters" do
-      let(:user) {FactoryBot.create(:user)}
-      let(:access_token) { jwt_encode(user_id: user.id) }
-        before do 
-          post "/login", params: {
-            email: user.email,
-            password: user.password
-          }
-          access_token = json['access_token']
-          get "/", headers: { "Authorization" => "Bearer #{access_token}" }
-        end
-        it 'returns an array of users' do
-          expect(json).to be_an_instance_of(Array)
-        end
-        it 'returns all the users' do
-            expect(json.length).to eq(User.count-1)
-        end
-        it "returns ok status code" do
-          expect(response).to have_http_status(:ok)
-        end
+      it 'returns an array of users' do
+        get "/", headers: { "Authorization" => "Bearer #{access_token}" }
+        expect(json).to be_an_instance_of(Array)
+      end
+      it 'returns all the users' do
+        get "/", headers: { "Authorization" => "Bearer #{access_token}" }
+        expect(json.length).to eq(User.count-1)
+      end
+      it "returns ok status code" do
+        get "/", headers: { "Authorization" => "Bearer #{access_token}" }
+        expect(response).to have_http_status(:ok)
+      end
     end
-    context "invalid header" do
-        before do 
-          get "/", headers: { "Authorization" => "someInvalidToken" }
-        end
-        it "returns error" do
-          expect(json['error']).to be_present 
-        end
-        it "returns 401 status code" do
-          expect(response).to have_http_status(:unauthorized)
-        end
+    context "invalid header" do 
+      it "returns error" do
+        get "/", headers: { "Authorization" => "someInvalidToken" }
+        expect(json['error']).to be_present 
+      end
+      it "returns 401 status code" do
+        get "/", headers: { "Authorization" => "someInvalidToken" }
+        expect(response).to have_http_status(:unauthorized)
+      end
     end
   end
   describe "get /show" do
+    let(:user) {FactoryBot.create(:user)}
+    let(:access_token) { JsonWebToken.jwt_encode(user_id: user.id) }
     context "valid headers" do
-      let(:user) {FactoryBot.create(:user)}
-      let(:access_token) { jwt_encode(user_id: user.id) }
-        before do 
-          post "/login", params: {
-            email: user.email,
-            password: user.password
-          }
-          access_token = json['access_token']
-          get "/show", headers: { "Authorization" => "Bearer #{access_token}" }
-        end
-        it "returns the correct user" do
-          expect(json['email']).to eql(user.email)
-        end
-        it "returns ok status code" do
-          expect(response).to have_http_status(:ok)
-        end
+        
+      it "returns the correct user" do
+        get "/show", headers: { "Authorization" => "Bearer #{access_token}" }
+        expect(json['email']).to eql(user.email)
+      end
+      it "returns ok status code" do
+        get "/show", headers: { "Authorization" => "Bearer #{access_token}" }
+        expect(response).to have_http_status(:ok)
+      end
     end
-    context "invalid headers" do
-        before do 
-          get "/show", headers: { "Authorization" => "someInvalidToken" }
-        end
-        it "returns error" do
-          expect(json['error']).to be_present
-        end
-        it "returns 401 status code" do
-          expect(response).to have_http_status(:unauthorized)
-        end
+    context "invalid authorization headers" do
+      it "returns error" do
+        get "/show", headers: { "Authorization" => "someInvalidToken" }
+        expect(json['error']).to be_present
+      end
+      it "returns 401 status code" do
+        get "/show", headers: { "Authorization" => "someInvalidToken" }
+        expect(response).to have_http_status(:unauthorized)
+      end
     end
-    context "invalid headers" do
-        before do 
-          get "/show"
-        end
-        it "returns error" do
-          expect(json['error']).to eql("Authorization token missing")
-        end
-        it "returns 401 status code" do
-          expect(response).to have_http_status(:unauthorized)
-        end
+    context "missing headers" do
+      it "returns error" do
+        get "/show"
+        expect(json['error']).to eql("Authorization token missing")
+      end
+      it "returns 401 status code" do
+        get "/show"
+        expect(response).to have_http_status(:unauthorized)
+      end
     end
 
     describe "patch /update" do
+      let(:user) {FactoryBot.create(:user)}
+      let(:access_token) { JsonWebToken.jwt_encode(user_id: user.id) }
+      let(:valid_params) do {name: Faker::Name.name} end
+      let(:invalid_params) do {phone_number: "1234567"} end
+
       context "valid params" do
-        let(:user) {FactoryBot.create(:user)}
-        let(:access_token) { jwt_encode(user_id: user.id) }
-        let(:updated_name) {Faker::Name.name}
-          before do 
-            post "/login", params: {
-              email: user.email,
-              password: user.password
-            }
-            access_token = json['access_token']
-            patch "/update",params: {name: updated_name}, headers: { "Authorization" => "Bearer #{access_token}" }
-          end
-          it "returns the correct updated user" do
-            expect(json['email']).to eql(user.email)
-          end
-          it "returns the updated user's name" do
-            expect(json['name']).to eql(updated_name)
-          end
-          it "returns ok status code" do
-            expect(response).to have_http_status(:ok)
-          end
+        it "returns the correct updated user" do
+          patch "/update",params: valid_params, headers: { "Authorization" => "Bearer #{access_token}" }
+          expect(json['email']).to eql(user.email)
+        end
+        it "returns the updated user's name" do
+          patch "/update",params: valid_params, headers: { "Authorization" => "Bearer #{access_token}" }
+          expect(json['name']).to eql(valid_params[:name])
+        end
+        it "returns ok status code" do
+          patch "/update",params: valid_params, headers: { "Authorization" => "Bearer #{access_token}" }
+          expect(response).to have_http_status(:ok)
+        end
       end
+
       context "invalid params" do
-        let(:user) {FactoryBot.create(:user)}
-        let(:access_token) { jwt_encode(user_id: user.id) }
-        let(:phone_number) {"1234567"}
-          before do 
-            post "/login", params: {
-              email: user.email,
-              password: user.password
-            }
-            access_token = json['access_token']
-            patch "/update",params: {phone_number: phone_number}, headers: { "Authorization" => "Bearer #{access_token}" }
-          end
-          it "returns the errors array" do
-            expect(json['errors']).to be_present
-          end
-          it "returns unproccessable content status code" do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
+        it "returns the errors array" do
+          patch "/update",params: invalid_params, headers: { "Authorization" => "Bearer #{access_token}" }
+          expect(json['errors']).to be_present
+        end
+        it "returns unproccessable content status code" do
+          patch "/update",params: invalid_params, headers: { "Authorization" => "Bearer #{access_token}" }
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
       end
     end
   end
