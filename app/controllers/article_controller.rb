@@ -27,8 +27,12 @@ class ArticleController < ApplicationController
     end
     def create 
         @user = @current_user 
-        @article = @user.articles.create(article_params)
-        render json: @article, status: :created
+        @article = @user.articles.build(article_params)
+        if @article.save
+            render json: @article, status: :created
+        else 
+            render json: {errors: @article.errors.full_messages }, status: :unprocessable_entity
+        end
     end
 
     def show 
@@ -52,8 +56,9 @@ class ArticleController < ApplicationController
     def destroy 
         @article = Article.find(params[:id])
         if @article.user_id == @current_user.id 
-            @article.destroy
-            render json: {message: "article deleted" }, status: :no_content
+            if @article.destroy
+                render json: {message: "article deleted" }, status: :ok
+            end
         else 
             render json: {errors: "Not authorized to delete this article"}, status: :unauthorized
         end
