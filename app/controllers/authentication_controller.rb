@@ -12,17 +12,13 @@ class AuthenticationController < ApplicationController
     end
 
     def refresh 
-        decoded_token = JsonWebToken.jwt_decode(params[:refresh_token])
+        decoded_token = JsonWebToken.jwt_decode(params[:refresh_token]) if params[:refresh_token]
         if decoded_token && decoded_token["user_id"]
             @user = User.find(decoded_token["user_id"])
-            if decoded_token["exp"] >= Time.now.to_i
-                access_token = JsonWebToken.jwt_encode(user_id: @user.id)
-                render json: {access_token: access_token}, status: :ok
-            else
-                render json: {message: "Refresh token expired"}, status: :unauthorized
-            end
+            access_token = JsonWebToken.jwt_encode(user_id: @user.id)
+            render json: {access_token: access_token}, status: :ok
         else
-            render json: {message: "Invalid refresh token"}, status: :unauthorized
+            render json: {message: "refresh token missing"}, status: :unauthorized
         end
     end
     
