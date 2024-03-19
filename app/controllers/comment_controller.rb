@@ -2,8 +2,13 @@ class CommentController < ApplicationController
 
     def create 
         @article = Article.find(params[:id])
-        @comment = @article.comments.create(comment_params.merge(user_id: @current_user.id))
-        render json: @comment, status: :created
+        @comment = @article.comments.new(comment_params.merge(user_id: @current_user.id))
+        if @comment.save
+            render json: @comment, status: :created
+        else 
+            render json: {errors: @comment.errors.full_messages} , status: :unprocessable_entity
+        end
+    
     end
 
     def show_all  
