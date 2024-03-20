@@ -51,4 +51,64 @@ RSpec.describe "CommentControllers", type: :request do
       end
     end
   end
+  describe "PATCH /article/:article_id/comment/:id" do 
+    context "when correct user with valid params update" do 
+      it "should update the comment and return updated comment" do
+        comment_params = { comment: valid_params }
+        patch "/article/#{article.id}/comment/#{comment.id}", params: comment_params, headers: { "Authorization" => "Bearer #{access_token2}" }
+         expect(json["body"]).to eq(valid_params[:body])
+      end
+      it "should return ok status code" do
+        comment_params = { comment: valid_params }
+        patch "/article/#{article.id}/comment/#{comment.id}", params: comment_params, headers: { "Authorization" => "Bearer #{access_token2}" }
+         expect(response).to have_http_status(:ok)
+      end
+    end
+    context "when other user with valid params update" do 
+      it "should return error giving unauthorized message" do
+        comment_params = { comment: valid_params }
+        patch "/article/#{article.id}/comment/#{comment.id}", params: comment_params, headers: { "Authorization" => "Bearer #{access_token1}" }
+         expect(json["error"]).to eq("Not authorized to edit this comment")
+      end
+      it "should return unauthorized status code" do
+        comment_params = { comment: valid_params }
+        patch "/article/#{article.id}/comment/#{comment.id}", params: comment_params, headers: { "Authorization" => "Bearer #{access_token1}" }
+         expect(response).to have_http_status(:unauthorized)
+      end
+    end
+    context "when correct user with invalid params update" do
+      it "should return error" do
+        comment_params = { comment: invalid_params }
+        patch "/article/#{article.id}/comment/#{comment.id}", params: comment_params, headers: { "Authorization" => "Bearer #{access_token2}" }
+         expect(json["error"]).not_to be_empty
+      end
+      it "should return unprocessable content status code" do
+        comment_params = { comment: invalid_params }
+        patch "/article/#{article.id}/comment/#{comment.id}", params: comment_params, headers: { "Authorization" => "Bearer #{access_token2}" }
+         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  end
+  describe "DELETE /article/:article_id/comment/:id" do 
+    context "when correct user tries to delete" do 
+      it "should delete the comment" do
+        delete "/article/#{article.id}/comment/#{comment.id}", headers: { "Authorization" => "Bearer #{access_token2}" }
+         expect(json["message"]).to eq("Comment deleted")
+      end
+      it "should return ok status code" do
+        delete "/article/#{article.id}/comment/#{comment.id}", headers: { "Authorization" => "Bearer #{access_token2}" }
+         expect(response).to have_http_status(:ok)
+      end
+    end
+    context "when other user tries to delete" do 
+      it "should return error giving unauthorized message" do
+        delete "/article/#{article.id}/comment/#{comment.id}", headers: { "Authorization" => "Bearer #{access_token1}" }
+         expect(json["error"]).to eq("Not authorized to delete this comment")
+      end
+      it "should return unauthorized status code" do
+        delete "/article/#{article.id}/comment/#{comment.id}", headers: { "Authorization" => "Bearer #{access_token1}" }
+         expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
 end
