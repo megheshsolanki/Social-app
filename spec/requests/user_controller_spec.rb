@@ -6,16 +6,18 @@ end
 
 RSpec.describe "UserControllers", type: :request do
   
+  let(:valid_params) { FactoryBot.attributes_for(:user) }
+  let(:invalid_params) do 
+    {
+      name: "asd",
+      email: "asdasd.com",
+      phone_number: "123",
+      password: "password"
+    }
+  end
+  let(:user) { FactoryBot.create(:user)}
+  let(:access_token) { JsonWebToken.jwt_encode(user_id: user.id) }
   describe "POST /register" do
-    let(:valid_params) { FactoryBot.attributes_for(:user) }
-    let(:invalid_params) do 
-      {
-        name: "asd",
-        email: "asdasd.com",
-        phone_number: "123",
-        password: "password"
-      }
-    end
     context "with valid parameters" do
       it "should return user instance" do
         post '/register', params: valid_params
@@ -50,8 +52,6 @@ RSpec.describe "UserControllers", type: :request do
     end
   end
   describe "get /" do
-    let(:user) { FactoryBot.create(:user)}
-    let(:access_token) { JsonWebToken.jwt_encode(user_id: user.id) }
     context "valid parameters" do
       it 'returns an array of users' do
         get "/", headers: { "Authorization" => "Bearer #{access_token}" }
@@ -78,10 +78,7 @@ RSpec.describe "UserControllers", type: :request do
     end
   end
   describe "get /show" do
-    let(:user) {FactoryBot.create(:user)}
-    let(:access_token) { JsonWebToken.jwt_encode(user_id: user.id) }
     context "valid headers" do
-        
       it "returns the correct user" do
         get "/show", headers: { "Authorization" => "Bearer #{access_token}" }
         expect(json['email']).to eql(user.email)
@@ -113,8 +110,6 @@ RSpec.describe "UserControllers", type: :request do
     end
 
     describe "patch /update" do
-      let(:user) {FactoryBot.create(:user)}
-      let(:access_token) { JsonWebToken.jwt_encode(user_id: user.id) }
       let(:valid_params) do {name: Faker::Name.name} end
       let(:invalid_params) do {phone_number: "1234567"} end
 

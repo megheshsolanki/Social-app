@@ -5,8 +5,10 @@ def json
 end
 
 RSpec.describe "Authentications", type: :request do
+  let(:user) {FactoryBot.create(:user)}
+  let(:refresh_token) { JsonWebToken.jwt_encode(user_id: user.id) }
+  
   describe "POST /login" do
-    let(:user) {FactoryBot.create(:user)}
     context "with valid params" do
       it "should return access token" do
         post "/login", params: {
@@ -48,8 +50,6 @@ RSpec.describe "Authentications", type: :request do
     end
   end
   describe "post /refresh" do
-    let(:user) {FactoryBot.create(:user)}
-    let(:refresh_token) { JsonWebToken.jwt_encode(user_id: user.id) }
     context "valid parameters" do
       it 'returns access_token' do
         post "/refresh", params: {
