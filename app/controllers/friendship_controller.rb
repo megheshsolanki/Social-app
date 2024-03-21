@@ -4,14 +4,13 @@ class FriendshipController < ApplicationController
     def create 
         @user = @current_user 
         @friend = User.find(params[:id])
-
-        @check_friend = Friendship.find_by(sender_id: @user,reciever_id: @friend.id)
+        @check_friend = Friendship.find_by(sender_id: @user.id,reciever_id: @friend.id)
         if @check_friend
           case @check_friend.status
           when "accepted" 
-            render json: {message: "Already friends"}, status: :ok 
+            render json: {message: "Already friends"}, status: :ok
           when "pending"
-            render json: {message: "request neither accepted nor denied"}, status: :ok  
+            render json: {message: "request neither accepted nor denied"}, status: :ok
           when "declined"
             if @check_friend.created_at <= 30.days.ago
               @check_friend.destroy
