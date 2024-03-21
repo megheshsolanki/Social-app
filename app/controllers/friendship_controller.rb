@@ -52,12 +52,10 @@ class FriendshipController < ApplicationController
         @friendship.status = "accepted"
         Friendship.create(sender_id: @current_user.id, reciever_id: @sender.id, status:'accepted')
         @notification = Notification.find_by(sender_id: @sender.id,reciever_id: @user.id, notification_type: 'friendship request')
-        @notification.destroy
-        if @friendship.save 
-          render json: {message: "Friend request accepted"}, status: :ok
-        else 
-          render json: {message: "Friend request not accepted"}, status: :unprocessable_entity
-        end
+        @notification.destroy if @notification
+        @friendship.save 
+        render json: {message: "Friend request accepted"}, status: :ok
+        
     end
 
     def decline
@@ -65,13 +63,14 @@ class FriendshipController < ApplicationController
         @sender = User.find(params[:to_decline])
         @friendship = Friendship.find_by(sender_id: @sender.id, reciever_id: @user.id)
         @notifications = Notification.find_by(sender_id: @sender.id,reciever_id: @user.id, notification_type: 'friendship request')
-        @notification.destroy
+        @notification.destroy if @notification
         @friendship.status = "declined"
+        @friendship.save
         render json: {message: "Friend request declined"}, status: :ok 
       end
     
     def block
-      if BlockedUser.where(blocked_by_id: @current_user.id, blocked_id: params[:id])
+      if BlockedUser.find_by(blocked_by_id: @current_user.id, blocked_id: params[:id])
         render json: {message: "User already blocked"}, status: :ok 
       else 
         @friendship = Friendship.find_by(sender_id: params[:id],reciever_id: @current_user.id)
